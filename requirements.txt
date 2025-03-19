@@ -1,0 +1,14 @@
+flask
+matplotlib
+torch
+torchvision
+fastai
+pillow
+numpy
+scikit-learn
+werkzeug
+jinja2
+base64
+io
+json
+gunicorn

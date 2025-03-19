@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlexNet API</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        input { margin-top: 10px; }
+        img { margin-top: 20px; max-width: 300px; }
+    </style>
+</head>
+<body>
+    <h1>AlexNet API - Evaluación y Clasificación</h1>
+    
+    <h2>Evaluar Modelo</h2>
+    <div id="chart-container"></div>
+    <button onclick="evaluateModel()">Evaluar</button>
+    
+    <h2>Clasificar Imagen</h2>
+    <input type="file" id="imageInput" accept="image/*">
+    <button onclick="classifyImage()">Clasificar</button>
+    <p id="prediction"></p>
+    <img id="preview" style="display: none;">
+    <div id="accuracy"></div>
+    
+    <script>
+        function evaluateModel() {
+            fetch('/evaluate')
+            .then(response => response.json())
+            .then(data => {
+                // Crear la imagen de la gráfica
+                const chartImg = document.createElement('img');
+                chartImg.src = 'data:image/png;base64,' + data.chart;
+                chartImg.alt = 'Gráfica de Métricas';
+                chartImg.style.maxWidth = '400px';
+                chartImg.style.marginTop = '20px';
+
+                // Añadir la imagen a "chart-container"
+                const chartContainer = document.getElementById('chart-container');
+                chartContainer.innerHTML = '';  // Limpiar contenido previo
+                chartContainer.appendChild(chartImg);  // Añadir la nueva imagen
+            })
+            .catch(error => {
+                console.error('Error al obtener la gráfica:', error);
+            });
+        }
+
+        function classifyImage() {
+            const fileInput = document.getElementById('imageInput');
+            if (!fileInput.files.length) {
+                alert('Selecciona una imagen primero');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+            
+            fetch('/classify', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('prediction').innerText = 'Predicción: ' + data.prediction;
+                const img = document.getElementById('preview');
+                img.src = URL.createObjectURL(fileInput.files[0]);
+                img.style.display = 'block';
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

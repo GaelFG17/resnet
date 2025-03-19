@@ -8,7 +8,6 @@ numpy
 scikit-learn
 werkzeug
 jinja2
-base64
 io
 json
 gunicorn
